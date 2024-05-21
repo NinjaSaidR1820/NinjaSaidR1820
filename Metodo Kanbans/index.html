@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Kanban</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="calculator">
+        <h2>Calculadora de Kanban</h2>
+        <div class="input-group">
+            <label for="product-name">Nombre del Producto:</label>
+            <input type="text" id="product-name">
+        </div>
+        <div class="input-group">
+            <label for="demand-rate">Tasa de Demanda (D):</label>
+            <input type="number" id="demand-rate">
+        </div>
+        <div class="input-group">
+            <label for="container-turnaround-time">Tiempo de Vuelta de Recipiente (T):</label>
+            <input type="number" id="container-turnaround-time">
+        </div>
+        <div class="input-group">
+            <label for="container-size">Tamaño del Recipiente (C):</label>
+            <input type="number" id="container-size">
+        </div>
+        <button onclick="calculate()">Calcular</button>
+        <div id="results"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
