@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora LTC</title>
+    <link rel="stylesheet" type="text/css" href="css/styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: black;
+            color: white;
+        }
+
+        button {
+            font-size: 15px;
+            line-height: 40px;
+            width: 100px;
+            height: 30px;
+            text-align: center;
+            border-color: black;
+            background-color: #ff4d05;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <a href="index.html" class="logo"> Dream<span>Team</span>.</a>
+
+        <ul class="navlist">
+            <li><a href="index.html" class="active">Home</a></li>
+            <li><a href="index.html">About Me</a></li>
+            <li><a href="Portfolio.html">Methods</a></li>
+            <li><a href="ContactMe.html">Contact Us</a></li>
+        </ul>
+        <div class="bx bx-menu" id="menu-icon">
+        </div>
+    </header>
+
+    <section id="contact" class="contact">
+        <div class="contact-form">
+        <h1>LTC</h1>
+        <form id="eoqForm">
+            <div class="form-group">
+                <label for="weeks">Cantidad de semanas:</label>
+                <input type="number" id="weeks" value="4" /><br ><br/>
+            </div>
+
+            <div class="form-group">
+                <label for="LT">Tiempo de Entrega (LT):</label>
+                <input type="number" id="LT" value="0" /><br /><br />
+            </div>
+
+            <div class="form-group">
+                <label for="K">Costo de Mantenimiento (K):</label>
+                <input type="number" id="K" value="0" /><br /><br />
+            </div>
+        
+        </form>
+
+        <button onclick="generateTable()"><strong>Tabla</strong></button><br /><br />
+
+        <div id="tableContainer"></div>
+    
+        <button onclick="calculateLTC()"><strong>Calcular</strong></button><br /><br />
+        <div id="result"></div>
+
+    </div>
+    </section>
+
+    <script>
+        function generateTable() {
+            var weeks = parseInt(document.getElementById("weeks").value);
+            var tableHTML = "<table id='dataTable'><tr><th>Semana</th><th>Requerimiento Bruto</th><th>Recepción Planeada</th></tr>";
+            for (var i = 1; i <= weeks; i++) {
+                tableHTML += "<tr><td>Semana " + i + "</td><td><input type='number' id='demand_" + i + "' value='0'></td><td id='plannedReception_" + i + "'></td></tr>";
+            }
+            tableHTML += "</table>";
+            document.getElementById("tableContainer").innerHTML = tableHTML;
+        }
+
+        function calculateLTC() {
+            var weeks = parseInt(document.getElementById("weeks").value);
+            var LT = parseInt(document.getElementById("LT").value);
+            var K = parseFloat(document.getElementById("K").value);
+
+            var accumulatedCost = 0;
+            var iterationCount = 0;
+            var periodsMaintained = 0;
+            var ltcTableHTML = "<h2>Tabla LTC:</h2>";
+            var LT = parseInt(document.getElementById("LT").value);
+            ltcTableHTML += "<table><tr><th>Semana</th><th>Requerimiento Bruto</th><th>Unidades Periodos Mantenidos</th><th>Costo de Mantenimiento</th><th>Costo de Mantenimiento Acumulado</th></tr>";
+
+            for (var i = 1; i <= weeks; i++) {
+
+                if (LT == 0) {
+                    LT = 5;
+                }
+                
+                if(weeks < 5){
+                    LT = weeks;
+                }
+
+                var demand = parseFloat(document.getElementById("demand_" + i).value);
+                var maintenanceCost = demand * periodsMaintained * K;
+                accumulatedCost += maintenanceCost;
+
+                if (i % LT == 0) {
+                    document.getElementById("plannedReception_" + i).innerHTML = accumulatedCost;
+                }
+
+                if (periodsMaintained % (LT) === 0) {
+                    accumulatedCost = 0;
+                    periodsMaintained = 0;
+                    sumaUnidades = 0;
+                }
+
+                ltcTableHTML += "<tr>";
+                ltcTableHTML += "<td>Semana " + i + "</td>";
+                ltcTableHTML += "<td>" + demand + "</td>";
+                ltcTableHTML += "<td>" + periodsMaintained + "</td>";
+                ltcTableHTML += "<td>" + maintenanceCost.toFixed(2) + "</td>";
+                ltcTableHTML += "<td>" + accumulatedCost.toFixed(2) + "</td>";
+                ltcTableHTML += "</tr>";
+                periodsMaintained++;
+            }
+
+            ltcTableHTML += "</table>";
+            document.getElementById("result").innerHTML = ltcTableHTML;
+        }
+    </script>
+</body>
+
+</html>
