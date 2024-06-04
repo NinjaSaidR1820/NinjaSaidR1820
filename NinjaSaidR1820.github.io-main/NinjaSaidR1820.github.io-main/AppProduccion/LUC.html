@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LUC</title>
+    <link rel="stylesheet" type="text/css" href="css/styles.css" />
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: black;
+        }
+
+        button {
+            font-size: 15px;
+            line-height: 40px;
+            width: 100px;
+            height: 30px;
+            text-align: center;
+            border-color: black;
+            background-color: #ff4d05;
+            color: white;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <a href="index.html" class="logo"> Dream<span>Team</span>.</a>
+
+        <ul class="navlist">
+            <li><a href="index.html" class="active">Home</a></li>
+            <li><a href="index.html">About Me</a></li>
+            <li><a href="Portfolio.html">Methods</a></li>
+            <li><a href="ContactMe.html">Contact Us</a></li>
+        </ul>
+        <div class="bx bx-menu" id="menu-icon"></div>
+    </header>
+
+    <section id="contact" class="contact">
+        <div class="contact-form">
+        <h1>LUC</h1>
+        <form id="eoqForm">
+            <div class="form-group">
+                <label for="weeks">Cantidad de semanas:</label>
+                <input type="number" id="weeks" value="4" /><br ><br/>
+            </div>
+
+            <div class="form-group">
+                <label for="LT">Tiempo de Entrega (LT):</label>
+                <input type="number" id="LT" value="0" /><br /><br />
+            </div>
+        
+            <div class="form-group">
+                <label for="S">Costo de Pedido (S):</label>
+                <input type="number" id="S" value="0" /><br /><br />
+            </div>
+
+            <div class="form-group">
+                <label for="K">Costo de Mantenimiento (K):</label>
+                <input type="number" id="K" value="0" /><br /><br />
+            </div>
+        
+        </form>
+
+        <button onclick="generateTable()"><strong>Tabla</strong></button><br /><br />
+
+        <div id="tableContainer"></div>
+    
+        <button onclick="calculateLUC()"><strong>Calcular</strong></button><br /><br />
+        <div id="result"></div>
+
+
+    </div>
+    </section>
+
+        <script>
+            function generateTable() {
+                var weeks = parseInt(document.getElementById("weeks").value);
+                var tableHTML =
+                    "<table id='dataTable'><tr><th>Semana</th><th>Requerimiento Bruto</th><th>Recepción Planeada</th></tr>";
+                for (var i = 1; i <= weeks; i++) {
+                    tableHTML +=
+                        "<tr><td>Semana " +
+                        i +
+                        "</td><td><input type='number' id='demand_" +
+                        i +
+                        "' value='0'></td><td id='plannedReception_" +
+                        i +
+                        "'></td></tr>";
+                }
+                tableHTML += "</table>";
+                document.getElementById("tableContainer").innerHTML = tableHTML;
+            }
+
+            function calculateLUC() {
+                var weeks = parseInt(document.getElementById("weeks").value);
+                var LT = parseInt(document.getElementById("LT").value);
+                var S = parseFloat(document.getElementById("S").value);
+                var K = parseFloat(document.getElementById("K").value);
+
+                var totalCost = 0;
+                var maxTotalCost = 0;
+                var maxTotalCosts = [];
+                var maxTotalCostWeeks = [];
+
+                var lucTableHTML = "<h2>Tabla LUC:</h2>";
+                lucTableHTML +=
+                    "<table><tr><th>Periodo</th><th>Unidades</th><th>S</th><th>K</th><th>Costo Total</th><th>Costo Unitario</th></tr>";
+
+                var iterationCount = 0;
+                var demandSum = 0;
+
+                for (var i = 1; i <= weeks; i++) {
+                    var demand = parseFloat(document.getElementById("demand_" + i).value);
+                    var demandSum = demandSum + demand;
+                    var period = iterationCount;
+                    var K_value = K * demand * (i-1);
+                    var currentTotalCost = iterationCount % 5 === 0 || iterationCount === 0 ? S + K_value : totalCost + K_value;
+                    var unitCost = currentTotalCost / demandSum;
+                    totalCost = currentTotalCost;
+                    iterationCount++;
+
+                    if (weeks > 5 && i === 5) {
+                        totalCost = 0;
+                        iterationCount = 0;
+                        demandSum = demand;
+                    }
+
+                    if (iterationCount % 5 === 0) {
+                        if (totalCost > maxTotalCost) {
+                            maxTotalCosts.push(totalCost);
+                            maxTotalCostWeeks.push(i - 4);
+                            if (maxTotalCosts.length > 2) {
+                                maxTotalCosts.shift();
+                                maxTotalCostWeeks.shift();
+                            }
+                            maxTotalCost = totalCost;
+                        }
+
+                        document.getElementById("plannedReception_" + i).innerHTML =
+                            currentTotalCost;
+                        demandSum = 0;
+                    } else if (i === weeks) {
+                        document.getElementById("plannedReception_" + i).innerHTML =
+                            currentTotalCost;
+                    }
+
+                    lucTableHTML += "<tr>";
+                    lucTableHTML += "<td>" + period + "</td>";
+                    lucTableHTML += "<td>" + demandSum.toFixed(2) + "</td>";
+                    lucTableHTML += "<td>" + S.toFixed(2) + "</td>";
+                    lucTableHTML += "<td>" + K_value.toFixed(2) + "</td>";
+                    lucTableHTML += "<td>" + currentTotalCost.toFixed(3) + "</td>";
+                    lucTableHTML += "<td>" + unitCost.toFixed(3) + "</td>";
+                    lucTableHTML += "</tr>";
+                }
+                lucTableHTML += "</table>";
+
+                document.getElementById("result").innerHTML = lucTableHTML;
+            }
+        </script>
+
+    <section class="end">
+        <div class="last-text">
+            <p>Copyright © 2023 by NinjaSaidR1820 All Rights Reserved</p>
+        </div>
+
+        <div class="top">
+            <a href="#"><i class="bx bx-up-arrow-alt"></i></a>
+        </div>
+    </section>
+
+    <!--Custom Js Link-->
+    <script type="text/javascript" src="js/script.js"></script>
+</body>
+
+</html>

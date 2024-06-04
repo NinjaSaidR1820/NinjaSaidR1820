@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Rotacion De Inv. Fija</title>
+        <link rel="stylesheet" type="text/css" href="css/styles.css">
+        <link rel="stylesheet"
+            href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap"
+            rel="stylesheet">
+        <style>
+        /* Estilos personalizados para campos de entrada y selectores */
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #2a2a2a;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        /* Estilos personalizados para botones */
+        button[type="button"] {
+            background-color: #ff4d05;
+            color: #2a2a2a;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button[type="button"]:hover {
+            transform: scale(1.1);
+            transition: all .45s ease;
+        }
+    </style>
+    </head>
+    <body>
+
+        <header>
+            <a href="index.html" class="logo"> Dream<span>Team</span>.</a>
+            <ul class="navlist">
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="index.html">About Project</a></li>
+                <li><a href="Portfolio.html">Methods</a></li>
+                <li><a href="ContactMe.html">Contact Me</a></li>
+            </ul>
+            <div class="bx bx-menu" id="menu-icon"></div>
+        </header>
+
+        <section class="contact" id="contact">
+            <div class="contact-form">
+                <form id="inventoryForm">
+                    <label for="demandType">Tipo de Demanda:</label>
+                    <select id="demandType" onchange="toggleDemandInput()">
+                        <option value="anual">Anual</option>
+                        <option value="semanal">Semanal</option>
+                    </select><br><br>
+
+                    <div id="demandFields">
+                        <input type="number" placeholder="Demanda" id="demand"
+                            min="0" required><br><br>
+                        <input type="number"
+                            placeholder="Inventario de Seguridad (SS)"
+                            id="safetyStock" min="0" required><br><br>
+                    </div>
+
+                    <div id="weeklyDemandFields" style="display: none;">
+                        <input type="number" placeholder="Demanda Diaria"
+                            id="dailyDemand" min="0" required><br><br>
+                        <input type="number" placeholder="Número de Semanas"
+                            id="weeks" min="0" required><br><br>
+                        <input type="number"
+                            placeholder="Inventario de Seguridad (SS)"
+                            id="weeklySafetyStock" min="0" required><br><br>
+                    </div>
+
+                    <label for="quantityType">Tipo de Cantidad Pedida:</label>
+                    <select id="quantityType" onchange="toggleQuantityInput()">
+                        <option value="neto">Neto</option>
+                        <option value="porcentaje">Porcentaje</option>
+                    </select><br><br>
+
+                    <div id="netQuantity">
+                        <input type="number" placeholder="Cantidad Pedida"
+                            id="orderQuantity" min="0" required><br><br>
+                    </div>
+
+                    <div id="percentQuantity" style="display: none;">
+                        <input type="number"
+                            placeholder="Porcentaje de Cantidad Pedida (Max 100)"
+                            id="percentOrderQuantity" min="0" max="100"
+                            required><br><br>
+                    </div>
+
+                    <button type="button" onclick="calculateRotation()">Calcular
+                        Rotación</button>
+                </form>
+                <div id="result"></div>
+            </div>
+        </section>
+
+        <section class="end">
+            <div class="last-text">
+                <p>Copyright © 2023 by NinjaSaidR1820 All Rights Reserved </p>
+            </div>
+            <div class="top">
+                <a href="#"><i class='bx bx-up-arrow-alt'></i></a>
+            </div>
+        </section>
+
+        <script>
+    function toggleQuantityInput() {
+        var quantityType = document.getElementById("quantityType").value;
+        if (quantityType === "porcentaje") {
+            document.getElementById("netQuantity").style.display = "none";
+            document.getElementById("percentQuantity").style.display = "block";
+        } else {
+            document.getElementById("netQuantity").style.display = "block";
+            document.getElementById("percentQuantity").style.display = "none";
+        }
+    }
+    
+    function toggleDemandInput() {
+        var demandType = document.getElementById("demandType").value;
+        if (demandType === "semanal") {
+            document.getElementById("demandFields").style.display = "none";
+            document.getElementById("weeklyDemandFields").style.display = "block";
+        } else {
+            document.getElementById("demandFields").style.display = "block";
+            document.getElementById("weeklyDemandFields").style.display = "none";
+        }
+    }
+    
+    // JavaScript code for percentage validation
+    document.getElementById("percentOrderQuantity").addEventListener("input", function() {
+        if (this.value > 100) {
+            this.value = 100;
+        }
+    });
+    
+    function calculateRotation() {
+        var demandType = document.getElementById("demandType").value;
+        var demand;
+        var safetyStock;
+        
+        if (demandType === "semanal") {
+            var dailyDemand = parseFloat(document.getElementById("dailyDemand").value);
+            var weeks = parseFloat(document.getElementById("weeks").value);
+            demand = dailyDemand * weeks;
+            safetyStock = parseFloat(document.getElementById("weeklySafetyStock").value);
+            
+            // Limpiar campos semanales
+            document.getElementById("dailyDemand").value = "";
+            document.getElementById("weeks").value = "";
+            document.getElementById("weeklySafetyStock").value = "";
+        } else {
+            demand = parseFloat(document.getElementById("demand").value);
+            safetyStock = parseFloat(document.getElementById("safetyStock").value);
+            
+            // Limpiar campos anuales
+            document.getElementById("demand").value = "";
+            document.getElementById("safetyStock").value = "";
+        }
+        
+        var quantityType = document.getElementById("quantityType").value;
+        var orderQuantity;
+        
+        if (quantityType === "porcentaje") {
+            orderQuantity = parseFloat(document.getElementById("percentOrderQuantity").value);
+            orderQuantity = (orderQuantity / 100) * demand;
+        } else {
+            orderQuantity = parseFloat(document.getElementById("orderQuantity").value);
+        }
+
+        var inventoryAverage = Math.round((orderQuantity / 2) + safetyStock);
+        var inventoryRotation = Math.round(demand / inventoryAverage);
+
+        var resultMessage = "El inventario promedio es: " + inventoryAverage + "<br>";
+        resultMessage += "La rotación de inventario es: " + inventoryRotation;
+
+        document.getElementById("result").innerHTML = resultMessage;
+        
+        // Limpiar campos de cantidad pedida
+        document.getElementById("orderQuantity").value = "";
+        document.getElementById("percentOrderQuantity").value = "";
+    }
+
+
+    const header = document.querySelector("header");
+    window.addEventListener("scroll", function() {
+        header.classList.toggle("sticky", window.scrollY > 100);
+    });
+
+    let menu = document.querySelector('#menu-icon');
+    let navlist = document.querySelector('.navlist');
+
+    menu.onclick = () => {
+        menu.classList.toggle('bx-x');
+        navlist.classList.toggle('open');
+    };
+
+    window.onscroll = () => {
+        menu.classList.remove('bx-x');
+        navlist.classList.remove('open');
+    }; 
+
+    // Función para verificar y corregir números negativos
+    function checkNegativeInput(inputId) {
+        const input = document.getElementById(inputId);
+        if (input.value < 0) {
+            input.value = 0;
+        }
+    }
+
+    // Agregar eventos de entrada a los campos relevantes
+    document.getElementById("demand").addEventListener("input", function() {
+        checkNegativeInput("demand");
+    });
+
+    document.getElementById("safetyStock").addEventListener("input", function() {
+        checkNegativeInput("safetyStock");
+    });
+
+    document.getElementById("weeklySafetyStock").addEventListener("input", function() {
+        checkNegativeInput("weeklySafetyStock");
+    });
+
+    document.getElementById("dailyDemand").addEventListener("input", function() {
+        checkNegativeInput("dailyDemand");
+    });
+
+    document.getElementById("weeks").addEventListener("input", function() {
+        checkNegativeInput("weeks");
+    });
+
+    document.getElementById("orderQuantity").addEventListener("input", function() {
+        checkNegativeInput("orderQuantity");
+    });
+
+    document.getElementById("percentOrderQuantity").addEventListener("input", function() {
+        checkNegativeInput("percentOrderQuantity");
+    });
+</script>
+
+    </body>
+</html>

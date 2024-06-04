@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>EOQ - Cantidad Económica de Pedido</title>
+        <!-- Custom CSS -->
+        <link rel="stylesheet" type="text/css" href="css/styles.css">
+        <!-- Google Fonts -->
+        <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap"
+            rel="stylesheet">
+        <style>
+        /* Estilos adicionales pueden ir aquí */
+        .form-group select {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            margin-bottom: 15px;
+            background-color: #2a2a2a;/* Cambiar el fondo del select a negro */
+            color: white; /* Cambiar el color del texto a blanco */
+        }
+    </style>
+    </head>
+    <body>
+        <!-- Header -->
+        <header>
+            <a href="index.html" class="logo"> Dream<span>Team</span>.</a>
+            <ul class="navlist">
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="index.html">About Me</a></li>
+                <li><a href="Portfolio.html">Methods</a></li>
+                <li><a href="ContactMe.html">Contact Us</a></li>
+            </ul>
+            <div class="bx bx-menu" id="menu-icon"></div>
+        </header>
+
+        <!-- Contact Section -->
+        <section class="contact" id="contact">
+            <div class="contact-form">
+                <form id="eoqForm">
+                    <div class="form-group">
+                        <label for="demanda">Demanda:</label>
+                        <input type="number" id="demanda" placeholder="Demanda"
+                            required min="0" step="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="tipoDemanda">Tipo de Demanda:</label>
+                        <select id="tipoDemanda">
+                            <option value="anual">Anual</option>
+                            <option value="diaria">Diaria</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="costoPedido">Costo de Pedido ($):</label>
+                        <input type="number" id="costoPedido"
+                            placeholder="Costo de Pedido" required min="0"
+                            step="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="costoAlmacenamiento">Costo de Almacenamiento
+                            ($):</label>
+                        <input type="number" id="costoAlmacenamiento"
+                            placeholder="Costo de Almacenamiento" required
+                            min="0" step="0.01">
+                    </div>
+                    <input type="submit" value="Calcular EOQ" class="submit"
+                        required>
+                </form>
+            </div>
+        </section>
+
+        <!-- Resultado -->
+        <div id="resultado" class="resultado-container"></div>
+
+        <!-- Custom JavaScript -->
+        <script>
+            document.getElementById("eoqForm").addEventListener("submit", function(event) {
+                event.preventDefault();
+    
+                // Obtener valores de entrada del usuario
+                var demanda = parseFloat(document.getElementById("demanda").value);
+                var tipoDemanda = document.getElementById("tipoDemanda").value;
+                var costoPedido = parseFloat(document.getElementById("costoPedido").value);
+                var costoAlmacenamiento = parseFloat(document.getElementById("costoAlmacenamiento").value);
+    
+                // Verificar si algún valor es negativo o igual a cero
+                if (demanda <= 0.01 || costoPedido <= 0.01|| costoAlmacenamiento <= 0.01) {
+                    alert("Los valores deben ser mayores a cero");
+                    return;
+                }
+    
+                // Calcular EOQ
+                
+                var adjustedCostoAlmacenamiento = costoAlmacenamiento;
+                var eoq;
+                if (tipoDemanda === "anual") {
+                    eoq = Math.sqrt((2 * demanda * costoPedido) / adjustedCostoAlmacenamiento);
+                } else if (tipoDemanda === "diaria") {
+                    eoq = Math.sqrt((2 * demanda * 365 * costoPedido) / adjustedCostoAlmacenamiento); // Multiplicar por 365 días
+                }
+    
+                // Redondear EOQ al entero más cercano
+                eoq = Math.round(eoq);
+    
+                // Mostrar resultado
+                var resultadoDiv = document.getElementById("resultado");
+                resultadoDiv.innerHTML = "<p>EOQ = √((2 * " + demanda + " * " + (tipoDemanda === "anual" ? 1 : 365) + " * " + costoPedido + ") / " + costoAlmacenamiento + ")</p>";
+                resultadoDiv.innerHTML += "<p class='eoq-result'>EOQ = " + eoq + "</p>";
+    
+                // Limpiar campos de entrada
+                document.getElementById("demanda").value = "";
+                document.getElementById("costoPedido").value = "";
+                document.getElementById("costoAlmacenamiento").value = "";
+            });
+
+
+            const header = document.querySelector("header");
+window.addEventListener ("scroll", function(){
+    header.classList.toggle("sticky", window.scrollY > 100);
+
+});
+
+let menu = document.querySelector('#menu-icon');
+let navlist = document.querySelector('.navlist');
+
+menu.onclick = () => {
+    menu.classList.toggle('bx-x');
+    navlist.classList.toggle('open');
+};
+
+window.onscroll = () => {
+    menu.classList.remove('bx-x');
+    navlist.classList.remove('open');
+}; 
+
+        </script>
+
+        <section class="end">
+            <div class="last-text">
+                <p>Copyright © 2023 by NinjaSaidR1820 All Rights Reserved </p>
+            </div>
+
+            <div class="top">
+                <a href="#"><i class='bx bx-up-arrow-alt'></i></a>
+            </div>
+        </section>
+
+    </body>
+</html>
