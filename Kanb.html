@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabla Dinámica</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <a href="#" class="logo">Dream<span>Team</span>.</a>
+        <ul class="navlist">
+            <li><a href="index.html" class="active">Home</a></li>
+            <li><a href="index.html">About Me</a></li>
+            <li><a href="Portfolio.html">Methods</a></li>
+            <li><a href="ContactMe.html">Contact Us</a></li>
+        </ul>
+        <div class="bx bx-menu" id="menu-icon"></div>
+    </header>
+
+    <section class="contact" id="contact">
+        <div class="contact-form">
+            <form id="cmcForm">
+                <div class="form-group">
+                    <label for="num-componentes">Número de componentes:</label>
+                    <input type="number" id="num-componentes" name="num-componentes" min="1" step="1" value="1">
+
+                    <label for="tipo-ss">Tipo de Stock de Seguridad:</label>
+                    <select id="tipo-ss" class="button">
+                        <option value="procentual">Porcentual (%)</option>
+                        <option value="entero">Número entero</option>
+                    </select>
+
+                    <label for="tipo-almacenaje">Tipo de Almacenaje:</label>
+                    <select id="tipo-almacenaje" class="button">
+                        <option value="procentual">Porcentual (%)</option>
+                        <option value="entero">Número entero</option>
+                    </select>
+
+                    <button class="button" type="button" id="crear-tabla-btn">Crear Tabla</button>
+                    <button class="button" type="button" id="eliminar-tabla-btn">Eliminar Tabla</button>
+                    <button class="button" type="button" id="calcular-btn">Calcular Kanbanes</button>
+
+                    <table id="tabla-inventario">
+                        <thead>
+                            <tr>
+                                <th>Componente</th>
+                                <th>Demanda</th>
+                                <th>Tiempo de Entrega</th>
+                                <th>Stock de Seguridad</th>
+                                <th>Almacenaje</th>
+                                <th class="kanban-th" style="display: none;">Kanbanes</th> <!-- Nueva columna para mostrar resultados -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Aquí se generarán las filas dinámicamente -->
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="5"><strong>Total de Kanbanes:</strong></td>
+                                <td id="total-kanbanes" class="kanban-td" style="display: none;"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <section class="end">
+        <div class="last-text">
+            <p>Copyright © 2023 by NinjaSaidR1820 All Rights Reserved </p>
+        </div>
+        <div class="top">
+            <a href="#"><i class='bx bx-up-arrow-alt'></i></a>
+        </div>
+    </section>
+
+    <script src="/js/script.js"></script> <!-- Asegúrate de tener un archivo JavaScript llamado scripts.js -->
+    <script src="/js/NewKanban.js"></script>
+</body>
+</html>
