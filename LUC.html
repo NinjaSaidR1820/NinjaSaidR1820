@@ -58,127 +58,132 @@
 
     <section id="contact" class="contact">
         <div class="contact-form">
-        <h1>LUC</h1>
-        <form id="eoqForm">
-            <div class="form-group">
-                <label for="weeks">Cantidad de semanas:</label>
-                <input type="number" id="weeks" value="4" /><br ><br/>
-            </div>
+            <h1>LUC</h1>
+            <form id="eoqForm">
+                <div class="form-group">
+                    <label for="weeks">Cantidad de semanas:</label>
+                    <input type="number" id="weeks" value="4" /><br><br />
+                </div>
 
-            <div class="form-group">
-                <label for="LT">Tiempo de Entrega (LT):</label>
-                <input type="number" id="LT" value="0" /><br /><br />
-            </div>
-        
-            <div class="form-group">
-                <label for="S">Costo de Pedido (S):</label>
-                <input type="number" id="S" value="0" /><br /><br />
-            </div>
+                <div class="form-group">
+                    <label for="LT">Tiempo de Entrega (LT):</label>
+                    <input type="number" id="LT" value="0" /><br /><br />
+                </div>
 
-            <div class="form-group">
-                <label for="K">Costo de Mantenimiento (K):</label>
-                <input type="number" id="K" value="0" /><br /><br />
-            </div>
-        
-        </form>
+                <div class="form-group">
+                    <label for="S">Costo de Pedido (S):</label>
+                    <input type="number" id="S" value="0" /><br /><br />
+                </div>
 
-        <button onclick="generateTable()"><strong>Tabla</strong></button><br /><br />
+                <div class="form-group">
+                    <label for="K">Costo de Mantenimiento (K):</label>
+                    <input type="number" id="K" value="0" /><br /><br />
+                </div>
 
-        <div id="tableContainer"></div>
-    
-        <button onclick="calculateLUC()"><strong>Calcular</strong></button><br /><br />
-        <div id="result"></div>
+            </form>
+
+            <button onclick="generateTable()"><strong>Tabla</strong></button><br /><br />
+
+            <div id="tableContainer"></div>
+
+            <button onclick="calculateLUC()"><strong>Calcular</strong></button><br /><br />
+            <div id="result"></div>
 
 
-    </div>
+        </div>
     </section>
 
-        <script>
-            function generateTable() {
-                var weeks = parseInt(document.getElementById("weeks").value);
-                var tableHTML =
-                    "<table id='dataTable'><tr><th>Semana</th><th>Requerimiento Bruto</th><th>Recepción Planeada</th></tr>";
-                for (var i = 1; i <= weeks; i++) {
-                    tableHTML +=
-                        "<tr><td>Semana " +
-                        i +
-                        "</td><td><input type='number' id='demand_" +
-                        i +
-                        "' value='0'></td><td id='plannedReception_" +
-                        i +
-                        "'></td></tr>";
-                }
-                tableHTML += "</table>";
-                document.getElementById("tableContainer").innerHTML = tableHTML;
+    <script>
+        function generateTable() {
+            var weeks = parseInt(document.getElementById("weeks").value);
+            var tableHTML =
+                "<table id='dataTable'><tr><th>Semana</th><th>Requerimiento Bruto</th><th>Recepción Planeada</th></tr>";
+            for (var i = 1; i <= weeks; i++) {
+                tableHTML +=
+                    "<tr><td>Semana " +
+                    i +
+                    "</td><td><input type='number' id='demand_" +
+                    i +
+                    "' value='0'></td><td id='plannedReception_" +
+                    i +
+                    "'></td></tr>";
             }
+            tableHTML += "</table>";
+            document.getElementById("tableContainer").innerHTML = tableHTML;
+        }
 
-            function calculateLUC() {
-                var weeks = parseInt(document.getElementById("weeks").value);
-                var LT = parseInt(document.getElementById("LT").value);
-                var S = parseFloat(document.getElementById("S").value);
-                var K = parseFloat(document.getElementById("K").value);
+        function calculateLUC() {
+    var weeks = parseInt(document.getElementById("weeks").value);
+    var LT = parseInt(document.getElementById("LT").value);
+    var S = parseFloat(document.getElementById("S").value);
+    var K = parseFloat(document.getElementById("K").value);
 
-                var totalCost = 0;
-                var maxTotalCost = 0;
-                var maxTotalCosts = [];
-                var maxTotalCostWeeks = [];
+    var demandSum = 0;
+    var totalCost = 0;
+    var maxTotalCost = 0;
+    var maxTotalCostWeek = 0;
+    var period = 1; // Contador de períodos para reiniciar cada 5 semanas
 
-                var lucTableHTML = "<h2>Tabla LUC:</h2>";
-                lucTableHTML +=
-                    "<table><tr><th>Periodo</th><th>Unidades</th><th>S</th><th>K</th><th>Costo Total</th><th>Costo Unitario</th></tr>";
+    var lucTableHTML = "<h2>Tabla LUC:</h2>";
+    lucTableHTML += "<table><tr><th>Periodo</th><th>Unidades</th><th>S</th><th>K</th><th>Costo Total</th><th>Costo Unitario</th></tr>";
 
-                var iterationCount = 0;
-                var demandSum = 0;
+    for (var i = 1; i <= weeks; i++) {
+        var demand = parseFloat(document.getElementById("demand_" + i).value);
 
-                for (var i = 1; i <= weeks; i++) {
-                    var demand = parseFloat(document.getElementById("demand_" + i).value);
-                    var demandSum = demandSum + demand;
-                    var period = iterationCount;
-                    var K_value = K * demand * (i-1);
-                    var currentTotalCost = iterationCount % 5 === 0 || iterationCount === 0 ? S + K_value : totalCost + K_value;
-                    var unitCost = currentTotalCost / demandSum;
-                    totalCost = currentTotalCost;
-                    iterationCount++;
+        // Sumar la demanda actual a demandSum
+        demandSum += demand;
 
-                    if (weeks > 5 && i === 5) {
-                        totalCost = 0;
-                        iterationCount = 0;
-                        demandSum = demand;
-                    }
+        // Calcular el costo de mantenimiento acumulado
+        var holdingCost = (period === 1) ? 0 : demand * (period - 1) * K;
 
-                    if (iterationCount % 5 === 0) {
-                        if (totalCost > maxTotalCost) {
-                            maxTotalCosts.push(totalCost);
-                            maxTotalCostWeeks.push(i - 4);
-                            if (maxTotalCosts.length > 2) {
-                                maxTotalCosts.shift();
-                                maxTotalCostWeeks.shift();
-                            }
-                            maxTotalCost = totalCost;
-                        }
+        // Calcular el costo total acumulado
+        totalCost = (period === 1) ? 0 : totalCost + holdingCost;
 
-                        document.getElementById("plannedReception_" + i).innerHTML =
-                            currentTotalCost;
-                        demandSum = 0;
-                    } else if (i === weeks) {
-                        document.getElementById("plannedReception_" + i).innerHTML =
-                            currentTotalCost;
-                    }
+        // Calcular el costo total actual incluyendo el costo de pedido
+        var currentTotalCost = S + totalCost;
 
-                    lucTableHTML += "<tr>";
-                    lucTableHTML += "<td>" + period + "</td>";
-                    lucTableHTML += "<td>" + demandSum.toFixed(2) + "</td>";
-                    lucTableHTML += "<td>" + S.toFixed(2) + "</td>";
-                    lucTableHTML += "<td>" + K_value.toFixed(2) + "</td>";
-                    lucTableHTML += "<td>" + currentTotalCost.toFixed(3) + "</td>";
-                    lucTableHTML += "<td>" + unitCost.toFixed(3) + "</td>";
-                    lucTableHTML += "</tr>";
-                }
-                lucTableHTML += "</table>";
+        // Calcular el costo unitario
+        var unitCost = currentTotalCost / demandSum;
 
-                document.getElementById("result").innerHTML = lucTableHTML;
-            }
-        </script>
+        // Actualizar la tabla LUC
+        lucTableHTML += "<tr>";
+        lucTableHTML += "<td>" + i + "</td>";
+        lucTableHTML += "<td>" + demandSum.toFixed(2) + "</td>";
+        lucTableHTML += "<td>" + S.toFixed(2) + "</td>";
+        lucTableHTML += "<td>" + holdingCost.toFixed(2) + "</td>";
+        lucTableHTML += "<td>" + currentTotalCost.toFixed(3) + "</td>";
+        lucTableHTML += "<td>" + unitCost.toFixed(3) + "</td>";
+        lucTableHTML += "</tr>";
+
+        // Verificar si el costo total actual es el más alto en el período de 5 semanas
+        if (currentTotalCost > maxTotalCost) {
+            maxTotalCost = currentTotalCost;
+            maxTotalCostWeek = i;
+        }
+
+        // Cada 5 iteraciones, registrar el costo más alto en la semana correspondiente
+        if (period === 5 || i === weeks) {
+            document.getElementById("plannedReception_" + maxTotalCostWeek).innerHTML = maxTotalCost.toFixed(3);
+
+            // Reiniciar el costo más alto para el próximo período de 5 semanas
+            maxTotalCost = 0;
+
+            // Reiniciar los datos para el próximo período de 5 semanas
+            demandSum = 0;
+            totalCost = 0;
+
+            // Reiniciar el contador de períodos
+            period = 1;
+        } else {
+            period++;
+        }
+    }
+
+    lucTableHTML += "</table>";
+    document.getElementById("result").innerHTML = lucTableHTML;
+}
+
+    </script>
 
     <section class="end">
         <div class="last-text">

@@ -104,6 +104,7 @@
             var LT = parseInt(document.getElementById("LT").value);
             var K = parseFloat(document.getElementById("K").value);
 
+            var sum = 0;
             var accumulatedCost = 0;
             var iterationCount = 0;
             var periodsMaintained = 0;
@@ -124,9 +125,15 @@
                 var demand = parseFloat(document.getElementById("demand_" + i).value);
                 var maintenanceCost = demand * periodsMaintained * K;
                 accumulatedCost += maintenanceCost;
+                sum++;
 
                 if (i % LT == 0) {
                     document.getElementById("plannedReception_" + i).innerHTML = accumulatedCost;
+                }
+
+                if(i % 6 == 0)
+                {
+                    sum = 1;
                 }
 
                 if (periodsMaintained % (LT) === 0) {
@@ -136,7 +143,7 @@
                 }
 
                 ltcTableHTML += "<tr>";
-                ltcTableHTML += "<td>Semana " + i + "</td>";
+                ltcTableHTML += "<td>" + sum + "</td>";
                 ltcTableHTML += "<td>" + demand + "</td>";
                 ltcTableHTML += "<td>" + periodsMaintained + "</td>";
                 ltcTableHTML += "<td>" + maintenanceCost.toFixed(2) + "</td>";
@@ -149,8 +156,6 @@
             document.getElementById("result").innerHTML = ltcTableHTML;
         }
     </script>
-
-<script type="text/javascript" src="js/script.js"></script>
 </body>
 
 </html>
