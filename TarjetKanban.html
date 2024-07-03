@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap"
-        rel="stylesheet" />
+          rel="stylesheet" />
     <style>
         table {
             border-collapse: collapse;
@@ -40,7 +40,6 @@
             text-align: center;
         }
     </style>
-    </style>
 </head>
 <body>
     <header>
@@ -56,35 +55,36 @@
     </header>
 
     <section id="contact" class="contact">
-    <div class="contact-form">
-        <h1>Calculadora de Kanbans</h1>
+        <div class="contact-form">
+            <h1>Calculadora de Kanbans</h1>
 
-        <form id="eoqForm">
+            <form id="eoqForm">
+                <div class="form-group">
+                    <label for="demand">Demanda diaria (D):</label>
+                    <input type="number" id="demand" min="0" required>
+                </div>
 
-        <div class="form-group">
-            <label for="demand">Demanda diaria (D):</label>
-            <input type="number" id="demand" required>
-        </div>
+                <div class="form-group">
+                    <label for="leadTime">Tiempo de reposición (L) en días:</label>
+                    <input type="number" id="leadTime" min="0" required>
+                </div>
 
-        <div class="form-group">
-            <label for="leadTime">Tiempo de reposición (L) en días:</label>
-            <input type="number" id="leadTime" required>
-        </div>
-        
-        <div class="form-group">
-            <label for="safetyFactor">Factor de seguridad (S) en porcentaje:</label>
-            <input type="number" id="safetyFactor" required>
-        </div>
+                <div class="form-group">
+                    <label for="safetyFactor">Factor de seguridad (S) en porcentaje:</label>
+                    <input type="number" id="safetyFactor" min="0" required>
+                </div>
 
-        <div class="form-group">
-            <label for="containerSize">Cantidad por contenedor (C):</label>
-            <input type="number" id="containerSize" required>
+                <div class="form-group">
+                    <label for="containerSize">Cantidad por contenedor (C):</label>
+                    <input type="number" id="containerSize" min="0" required>
+                </div>
+
+                <button type="button" onclick="calculateKanbans()">Calcular</button>
+            </form>
+            <div id="result"></div>
         </div>
-        <button onclick="calculateKanbans()">Calcular</button>
-    </form>
-        <div id="result"></div>
-    </div>
-</section>
+    </section>
+
     <script>
         function calculateKanbans() {
             // Obtener los valores ingresados
@@ -93,6 +93,12 @@
             const safetyFactor = parseFloat(document.getElementById('safetyFactor').value) / 100;
             const containerSize = parseFloat(document.getElementById('containerSize').value);
 
+            // Validación de valores negativos
+            if (demand < 0 || leadTime < 0 || safetyFactor < 0 || containerSize < 0) {
+                alert("Los valores no pueden ser negativos.");
+                return;
+            }
+
             // Calcular el número de Kanbans
             const kanbans = (demand * leadTime * (1 + safetyFactor)) / containerSize;
 
@@ -100,17 +106,18 @@
             document.getElementById('result').innerText = 'Número de Kanbans necesarios: ' + Math.ceil(kanbans);
         }
     </script>
-        <section class="end">
-            <div class="last-text">
-                <p>Copyright © 2023 by NinjaSaidR1820 All Rights Reserved</p>
-            </div>
-    
-            <div class="top">
-                <a href="#"><i class="bx bx-up-arrow-alt"></i></a>
-            </div>
-        </section>
-    
-        <!--Custom Js Link-->
-        <script type="text/javascript" src="js/script.js"></script>
+
+    <section class="end">
+        <div class="last-text">
+            <p>Copyright © 2023 by NinjaSaidR1820 All Rights Reserved</p>
+        </div>
+
+        <div class="top">
+            <a href="#"><i class="bx bx-up-arrow-alt"></i></a>
+        </div>
+    </section>
+
+    <!--Custom Js Link-->
+    <script type="text/javascript" src="js/script.js"></script>
 </body>
 </html>

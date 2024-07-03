@@ -62,22 +62,22 @@
             <form id="eoqForm">
                 <div class="form-group">
                     <label for="weeks">Cantidad de semanas:</label>
-                    <input type="number" id="weeks" value="4" /><br><br />
+                    <input type="number" id="weeks" value="4" min="0" /><br><br />
                 </div>
 
                 <div class="form-group">
                     <label for="LT">Tiempo de Entrega (LT):</label>
-                    <input type="number" id="LT" value="0" /><br /><br />
+                    <input type="number" id="LT" value="0" min="0" /><br /><br />
                 </div>
 
                 <div class="form-group">
                     <label for="S">Costo de Pedido (S):</label>
-                    <input type="number" id="S" value="0" /><br /><br />
+                    <input type="number" id="S" value="0" min="0" /><br /><br />
                 </div>
 
                 <div class="form-group">
                     <label for="K">Costo de Mantenimiento (K):</label>
-                    <input type="number" id="K" value="0" /><br /><br />
+                    <input type="number" id="K" value="0" min="0" /><br /><br />
                 </div>
 
             </form>
@@ -96,6 +96,10 @@
     <script>
         function generateTable() {
             var weeks = parseInt(document.getElementById("weeks").value);
+            if (weeks < 0) {
+                alert("La cantidad de semanas no puede ser negativa.");
+                return;
+            }
             var tableHTML =
                 "<table id='dataTable'><tr><th>Semana</th><th>Requerimiento Bruto</th><th>Recepción Planeada</th></tr>";
             for (var i = 1; i <= weeks; i++) {
@@ -104,7 +108,7 @@
                     i +
                     "</td><td><input type='number' id='demand_" +
                     i +
-                    "' value='0'></td><td id='plannedReception_" +
+                    "' value='0' min='0'></td><td id='plannedReception_" +
                     i +
                     "'></td></tr>";
             }
@@ -113,76 +117,85 @@
         }
 
         function calculateLUC() {
-    var weeks = parseInt(document.getElementById("weeks").value);
-    var LT = parseInt(document.getElementById("LT").value);
-    var S = parseFloat(document.getElementById("S").value);
-    var K = parseFloat(document.getElementById("K").value);
+            var weeks = parseInt(document.getElementById("weeks").value);
+            var LT = parseInt(document.getElementById("LT").value);
+            var S = parseFloat(document.getElementById("S").value);
+            var K = parseFloat(document.getElementById("K").value);
 
-    var demandSum = 0;
-    var totalCost = 0;
-    var maxTotalCost = 0;
-    var maxTotalCostWeek = 0;
-    var period = 1; // Contador de períodos para reiniciar cada 5 semanas
+            if (weeks < 0 || LT < 0 || S < 0 || K < 0) {
+                alert("Los valores no pueden ser negativos.");
+                return;
+            }
 
-    var lucTableHTML = "<h2>Tabla LUC:</h2>";
-    lucTableHTML += "<table><tr><th>Periodo</th><th>Unidades</th><th>S</th><th>K</th><th>Costo Total</th><th>Costo Unitario</th></tr>";
+            var demandSum = 0;
+            var totalCost = 0;
+            var maxTotalCost = 0;
+            var maxTotalCostWeek = 0;
+            var period = 1; // Contador de períodos para reiniciar cada 5 semanas
 
-    for (var i = 1; i <= weeks; i++) {
-        var demand = parseFloat(document.getElementById("demand_" + i).value);
+            var lucTableHTML = "<h2>Tabla LUC:</h2>";
+            lucTableHTML += "<table><tr><th>Periodo</th><th>Unidades</th><th>S</th><th>K</th><th>Costo Total</th><th>Costo Unitario</th></tr>";
 
-        // Sumar la demanda actual a demandSum
-        demandSum += demand;
+            for (var i = 1; i <= weeks; i++) {
+                var demand = parseFloat(document.getElementById("demand_" + i).value);
 
-        // Calcular el costo de mantenimiento acumulado
-        var holdingCost = (period === 1) ? 0 : demand * (period - 1) * K;
+                if (demand < 0) {
+                    alert("La demanda no puede ser negativa en la semana " + i);
+                    return;
+                }
 
-        // Calcular el costo total acumulado
-        totalCost = (period === 1) ? 0 : totalCost + holdingCost;
+                // Sumar la demanda actual a demandSum
+                demandSum += demand;
 
-        // Calcular el costo total actual incluyendo el costo de pedido
-        var currentTotalCost = S + totalCost;
+                // Calcular el costo de mantenimiento acumulado
+                var holdingCost = (period === 1) ? 0 : demand * (period - 1) * K;
 
-        // Calcular el costo unitario
-        var unitCost = currentTotalCost / demandSum;
+                // Calcular el costo total acumulado
+                totalCost = (period === 1) ? 0 : totalCost + holdingCost;
 
-        // Actualizar la tabla LUC
-        lucTableHTML += "<tr>";
-        lucTableHTML += "<td>" + i + "</td>";
-        lucTableHTML += "<td>" + demandSum.toFixed(2) + "</td>";
-        lucTableHTML += "<td>" + S.toFixed(2) + "</td>";
-        lucTableHTML += "<td>" + holdingCost.toFixed(2) + "</td>";
-        lucTableHTML += "<td>" + currentTotalCost.toFixed(3) + "</td>";
-        lucTableHTML += "<td>" + unitCost.toFixed(3) + "</td>";
-        lucTableHTML += "</tr>";
+                // Calcular el costo total actual incluyendo el costo de pedido
+                var currentTotalCost = S + totalCost;
 
-        // Verificar si el costo total actual es el más alto en el período de 5 semanas
-        if (currentTotalCost > maxTotalCost) {
-            maxTotalCost = currentTotalCost;
-            maxTotalCostWeek = i;
+                // Calcular el costo unitario
+                var unitCost = currentTotalCost / demandSum;
+
+                // Actualizar la tabla LUC
+                lucTableHTML += "<tr>";
+                lucTableHTML += "<td>" + i + "</td>";
+                lucTableHTML += "<td>" + demandSum.toFixed(2) + "</td>";
+                lucTableHTML += "<td>" + S.toFixed(2) + "</td>";
+                lucTableHTML += "<td>" + holdingCost.toFixed(2) + "</td>";
+                lucTableHTML += "<td>" + currentTotalCost.toFixed(3) + "</td>";
+                lucTableHTML += "<td>" + unitCost.toFixed(3) + "</td>";
+                lucTableHTML += "</tr>";
+
+                // Verificar si el costo total actual es el más alto en el período de 5 semanas
+                if (currentTotalCost > maxTotalCost) {
+                    maxTotalCost = currentTotalCost;
+                    maxTotalCostWeek = i;
+                }
+
+                // Cada 5 iteraciones, registrar el costo más alto en la semana correspondiente
+                if (period === 5 || i === weeks) {
+                    document.getElementById("plannedReception_" + maxTotalCostWeek).innerHTML = maxTotalCost.toFixed(3);
+
+                    // Reiniciar el costo más alto para el próximo período de 5 semanas
+                    maxTotalCost = 0;
+
+                    // Reiniciar los datos para el próximo período de 5 semanas
+                    demandSum = 0;
+                    totalCost = 0;
+
+                    // Reiniciar el contador de períodos
+                    period = 1;
+                } else {
+                    period++;
+                }
+            }
+
+            lucTableHTML += "</table>";
+            document.getElementById("result").innerHTML = lucTableHTML;
         }
-
-        // Cada 5 iteraciones, registrar el costo más alto en la semana correspondiente
-        if (period === 5 || i === weeks) {
-            document.getElementById("plannedReception_" + maxTotalCostWeek).innerHTML = maxTotalCost.toFixed(3);
-
-            // Reiniciar el costo más alto para el próximo período de 5 semanas
-            maxTotalCost = 0;
-
-            // Reiniciar los datos para el próximo período de 5 semanas
-            demandSum = 0;
-            totalCost = 0;
-
-            // Reiniciar el contador de períodos
-            period = 1;
-        } else {
-            period++;
-        }
-    }
-
-    lucTableHTML += "</table>";
-    document.getElementById("result").innerHTML = lucTableHTML;
-}
-
     </script>
 
     <section class="end">

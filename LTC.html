@@ -59,41 +59,44 @@
 
     <section id="contact" class="contact">
         <div class="contact-form">
-        <h1>LTC</h1>
-        <form id="eoqForm">
-            <div class="form-group">
-                <label for="weeks">Cantidad de semanas:</label>
-                <input type="number" id="weeks" value="4" /><br ><br/>
-            </div>
+            <h1>LTC</h1>
+            <form id="eoqForm">
+                <div class="form-group">
+                    <label for="weeks">Cantidad de semanas:</label>
+                    <input type="number" id="weeks" value="4" min="0" /><br><br />
+                </div>
 
-            <div class="form-group">
-                <label for="LT">Tiempo de Entrega (LT):</label>
-                <input type="number" id="LT" value="0" /><br /><br />
-            </div>
+                <div class="form-group">
+                    <label for="LT">Tiempo de Entrega (LT):</label>
+                    <input type="number" id="LT" value="0" min="0" /><br /><br />
+                </div>
 
-            <div class="form-group">
-                <label for="K">Costo de Mantenimiento (K):</label>
-                <input type="number" id="K" value="0" /><br /><br />
-            </div>
-        
-        </form>
+                <div class="form-group">
+                    <label for="K">Costo de Mantenimiento (K):</label>
+                    <input type="number" id="K" value="0" min="0" /><br /><br />
+                </div>
+            </form>
 
-        <button onclick="generateTable()"><strong>Tabla</strong></button><br /><br />
+            <button onclick="generateTable()"><strong>Tabla</strong></button><br /><br />
 
-        <div id="tableContainer"></div>
-    
-        <button onclick="calculateLTC()"><strong>Calcular</strong></button><br /><br />
-        <div id="result"></div>
+            <div id="tableContainer"></div>
 
-    </div>
+            <button onclick="calculateLTC()"><strong>Calcular</strong></button><br /><br />
+            <div id="result"></div>
+
+        </div>
     </section>
 
     <script>
         function generateTable() {
             var weeks = parseInt(document.getElementById("weeks").value);
+            if (weeks < 0) {
+                alert("La cantidad de semanas no puede ser negativa.");
+                return;
+            }
             var tableHTML = "<table id='dataTable'><tr><th>Semana</th><th>Requerimiento Bruto</th><th>Recepción Planeada</th></tr>";
             for (var i = 1; i <= weeks; i++) {
-                tableHTML += "<tr><td>Semana " + i + "</td><td><input type='number' id='demand_" + i + "' value='0'></td><td id='plannedReception_" + i + "'></td></tr>";
+                tableHTML += "<tr><td>Semana " + i + "</td><td><input type='number' id='demand_" + i + "' value='0' min='0'></td><td id='plannedReception_" + i + "'></td></tr>";
             }
             tableHTML += "</table>";
             document.getElementById("tableContainer").innerHTML = tableHTML;
@@ -103,6 +106,11 @@
             var weeks = parseInt(document.getElementById("weeks").value);
             var LT = parseInt(document.getElementById("LT").value);
             var K = parseFloat(document.getElementById("K").value);
+
+            if (weeks < 0 || LT < 0 || K < 0) {
+                alert("Los valores no pueden ser negativos.");
+                return;
+            }
 
             var sum = 0;
             var accumulatedCost = 0;
@@ -117,12 +125,18 @@
                 if (LT == 0) {
                     LT = 5;
                 }
-                
-                if(weeks < 5){
+
+                if (weeks < 5) {
                     LT = weeks;
                 }
 
                 var demand = parseFloat(document.getElementById("demand_" + i).value);
+
+                if (demand < 0) {
+                    alert("La demanda no puede ser negativa en la semana " + i);
+                    return;
+                }
+
                 var maintenanceCost = demand * periodsMaintained * K;
                 accumulatedCost += maintenanceCost;
                 sum++;
@@ -131,8 +145,7 @@
                     document.getElementById("plannedReception_" + i).innerHTML = accumulatedCost;
                 }
 
-                if(i % 6 == 0)
-                {
+                if (i % 6 == 0) {
                     sum = 1;
                 }
 
@@ -156,6 +169,7 @@
             document.getElementById("result").innerHTML = ltcTableHTML;
         }
     </script>
+    <script type="text/javascript" src="js/script.js"></script>
 </body>
 
 </html>
