@@ -95,7 +95,7 @@ Mi meta profesional es consolidarme como **ingeniero de software especializado e
 📍 Managua, Nicaragua  
 📧 [saidrivas2022@hotmail.com](mailto:saidrivas2022@hotmail.com)  
 🔗 [LinkedIn](https://www.linkedin.com/in/denis-said-rivas-sanchez-2801802b5/)  
-📱 +505 8113 8750  
+📱 +505 8113 8759  
 
 ---
 
